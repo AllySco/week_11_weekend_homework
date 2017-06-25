@@ -1,47 +1,45 @@
-var app = function() {
+var app = function(){
   var url = "http://nflarrest.com/api/v1/team";
   var request = new XMLHttpRequest();
   request.open( "GET", url );
 
   request.addEventListener( "load", function() {
-    handleData(request.responseText );
-  console.log( this.responseText )
+    handleData( request.responseText );
   });
   request.send();
   loadFromStorage();
 }
 
-var findTeambyTeamAcronym = function( value, teams ) {
-  for ( team of teams ) {
+var findTeamByAcronym = function( value, teams ) {
+  for (team of teams ) {
     if ( team.Team == value ) {
       return team;
     }
-  }
+  }  
 }
 
 var handleData = function( teams ) {
-  team = JSON.parse( teams )
-  createDropdown( teams );
-  populateDropdown( teams );
+  teams = JSON.parse( teams );
+  createTeamDropdown( teams );
+  populateTeamDropdown( teams );
 }
 
-var createDropdown = function( teams ) {
+var createTeamDropdown = function( teams ) {
   var dropdown = document.createElement( "select" );
   var option = document.createElement( "option" );
-  option.text = "Select a team";
+  option.text = "Choose a team";
   dropdown.options.add( option );
-
   option.disabled = true;
   option.selected = true;
 
-  dropdown.addEventListener( "change", function( event ) {
+  dropdown.addEventListener( "change", function(event) {
     var value = event.target.selectedOptions[0].value;
-    var team = findTeambyTeamAcronym( value, teams );
+    var team = findTeamByAcronym( value, teams );
     createTeam( team );
     saveTeam( team );
   })
-  var div = document.querySelector( "#select" );
-  append( div, dropdown );
+  var div = document.querySelector( "#select");
+  append( div, dropdown )
 }
 
 var append = function() {
@@ -50,42 +48,35 @@ var append = function() {
   }
 }
 
-populateDropdown = function( teams ) {
-  var select = document.querySelector( "select" );
+var populateTeamDropdown = function( teams ) {
+  var select = document.querySelector( "select" )
   for ( team of teams ) {
     var option = document.createElement( "option" );
     option.value = team.Team;
-    option.text = team.Team_preffered_name;
+    option.text = team.Team;
     select.options.add( option );
-  } 
+  }
 }
 
 var createTeam = function( team ) {
-  var list = document.createElement( "ul" );
-  var city = document.createElement( "li" );
-  var name = document.createElement( "li" );
-  var conference = document.createElement( "li" );
-  var division = document.createElement( "li" );
-  var arrests = document.createElement( "li" );
+  var list = document.createElement( "dl" );
+  var fullName = document.createElement( "dt" );
+  var division = document.createElement( "dd" );
+  var arrests = document.createElement( "dd" );
   var teamDiv = document.querySelector( "#team" );
 
-  city.innerText = "City: " + team.Team_city;
-  name.innerText = "Team name: " + team.Team_name;
-  conference.innerText = "Conference: " + team.Team_Conference;
-  division.innerText = "Division: " + team.Team_Conference_Division;
-  arrests.innerText = "Arrests: " + team.arrest_count;
+  fullName.innerText = team.Team_preffered_name;
+  fullName.className = "name";
 
-  apppend( list, arrests );
-  apppend( list, division );
-  apppend( list, conference );
-  apppend( list, name );
-  apppend( list, city );
-  if ( teamDiv.childElementCount > 0 ){
-    teamDiv.insertBefore(list, teamDiv.childNodes[0] );
-  } else {
-    append( teamDiv, list );
+
+  division.innerText = team.Team_Conference_Division;
+  arrests.innerText = team.arrest_count;
+
+  append( fullName, division );
+  append( fullName, arrests );
+  append( list, fullName );
+      teamDiv.insertBefore(list, teamDiv.childNodes[0] );
   }
-}
 
 var saveTeam = function( team ) {
   var teamString = JSON.stringify( team );
@@ -101,7 +92,5 @@ var loadFromStorage = function() {
     }
   }
 }
-
-
 
 window.addEventListener('load', app);
