@@ -1,11 +1,15 @@
 var app = function(){
+  var url2 = "http://api.highcharts.com/highcharts";
   var url = "http://nflarrest.com/api/v1/team";
+  var request2 = new XMLHttpRequest();
   var request = new XMLHttpRequest();
   request.open( "GET", url );
+  request2.open( "GET", url2 );
 
   request.addEventListener( "load", function() {
     handleData( request.responseText );
   });
+    loadChart();
   request.send();
   loadFromStorage();
 }
@@ -75,8 +79,8 @@ var createTeam = function( team ) {
   append( fullName, division );
   append( fullName, arrests );
   append( list, fullName );
-      teamDiv.insertBefore(list, teamDiv.childNodes[0] );
-  }
+  teamDiv.insertBefore(list, teamDiv.childNodes[0] );
+}
 
 var saveTeam = function( team ) {
   var teamString = JSON.stringify( team );
@@ -91,6 +95,18 @@ var loadFromStorage = function() {
       createTeam( team );
     }
   }
+}
+
+var loadChart = function() {
+  var teamData = [
+  {
+    name: team.Team_preffered_name,
+    data: team.arrest_count
+  }
+  ]
+  var teamNames = [team.Team_preffered_name
+  ]
+  new ColumnChart( 'NFL Arrests', teamData, teamNames );
 }
 
 window.addEventListener('load', app);
